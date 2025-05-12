@@ -40,5 +40,19 @@ func main() {
 			ctx.IndentedJSON(http.StatusOK, gin.H{"success": true, "allCountries": allCountries})
 		})
 
+	router.GET("/get-country/:code",
+		func(ctx *gin.Context) {
+			country := models.Countries{}
+
+			code := ctx.Param("code")
+
+			if err := db.Find(&country, "country_code = ?", code).Error; err != nil {
+				ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+				return
+			}
+
+			ctx.IndentedJSON(http.StatusOK, gin.H{"success": true, "country": country})
+		})
+
 	router.Run(":8080")
 }
